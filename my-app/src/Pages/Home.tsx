@@ -28,8 +28,8 @@ const getFilterStateFromURL = () => {
 
   return {
     searchTerm: params.get("search") || "",
-    categories: params.get("categories")?.split(",") || [],
-    brands: params.get("brands")?.split(",") || [],
+    categoryOptions: params.get("categories")?.split(",") || [],
+    brandOptions: params.get("brands")?.split(",") || [],
     priceRange: (params.get("price") || "all") as PriceRange,
   };
 };
@@ -58,10 +58,12 @@ const updateURLWithFilters = (
 
 const Home = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [availableBrands, setAvailableBrands] = useState<string[]>([]);
   const initialFilters = getFilterStateFromURL();
   const [searchTerm, setSearchTerm] = useState(initialFilters.searchTerm);
-  const [categories, setCategories] = useState<string[]>(initialFilters.categories);
-  const [brands, setBrands] = useState<string[]>(initialFilters.brands);
+  const [categories, setCategories] = useState<string[]>(initialFilters.categoryOptions);
+  const [brands, setBrands] = useState<string[]>(initialFilters.brandOptions);
   const [priceRange, setPriceRange] = useState<PriceRange>(initialFilters.priceRange);
   const [isSearching, setIsSearching] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -71,6 +73,14 @@ const Home = () => {
   useEffect(() => {
     setProducts(mockData as Product[]);
   }, []);
+
+    const uniqueCategories = [...new Set(mockData.map((p: Product) => p.category))];
+    const uniqueBrands = [...new Set(mockData.map((p: Product) => p.brand))];
+
+    useEffect(() => {
+      setAvailableCategories(uniqueCategories);
+      setAvailableBrands(uniqueBrands);
+    }, []);
 
   useEffect(() => {
     setIsSearching(true);
@@ -136,14 +146,14 @@ const Home = () => {
           />
 
           {isSearching && (
-            <AiOutlineLoading3Quarters className="mx-auto mt-4 h-8 w-8 animate-spin text-red-500" />
+            <AiOutlineLoading3Quarters className="mx-auto mt-4 h-8 w-8 animate-spin text-red-500 " />
           )}
         </div>
 
         <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row gap-6">
           <FiltersSidebar
-            categories={categories}
-            brands={brands}
+            categoryOptions={categories}
+            brandOptions={brands}
             selectedCategories={categories}
             selectedBrands={brands}
             priceRange={priceRange}

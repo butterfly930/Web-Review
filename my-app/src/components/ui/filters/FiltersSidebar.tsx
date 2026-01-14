@@ -1,8 +1,6 @@
 import { useState } from "react";
 import ArrowIcon from "../../common/ArrowIcon";
 interface FiltersSidebarProps {
-  categories: string[];
-  brands: string[];
   selectedCategories: string[];
   selectedBrands: string[];
   priceRange: string;
@@ -11,18 +9,19 @@ interface FiltersSidebarProps {
   onPriceChange: (value: string) => void;
   onClear: () => void;
 }
+const categoryOptions = ["Order", "Preorder", "New", "Price"];
+
+const brandOptions = ["Apple", "Samsung", "Xiaomi"];
 
 const priceOptions = [
   { value: "all", label: "Të gjitha" },
-  { value: "0-20,000", label: "0 – 20,000 Lekë" },
-  { value: "20,000-50,000", label: "20,000 – 50,000 Lekë" },
-  { value: "50,000-100,000", label: "50,000 – 100,000 Lekë" },
-  { value: "100,000+", label: "100,000+ Lekë" },
+  { value: "0-20000", label: "0 – 20,000 Lekë" },
+  { value: "20000-50000", label: "20,000 – 50,000 Lekë" },
+  { value: "50000-100000", label: "50,000 – 100,000 Lekë" },
+  { value: "100000+", label: "100,000+ Lekë" },
 ];
 
 const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
-  categories,
-  brands,
   selectedCategories,
   selectedBrands,
   priceRange,
@@ -53,42 +52,42 @@ const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
         <h4 className="font-semibold text-lg mb-4 hidden lg:block">Filtrat</h4>
       <div className="mb-4">
         <h5 className="font-medium mb-2">Kategoria</h5>
-        {categories.map((c) => (
-          <label key={c} className="flex items-center gap-2 text-sm">
+        {categoryOptions.map((category) => (
+          <label key={category} className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
-              checked={selectedCategories.includes(c)}
-              onChange={() => onToggleCategory(c)}
+              checked={selectedCategories.includes(category)}
+              onChange={() => onToggleCategory(category)}
             />
-            {c}
+            {category}
           </label>
         ))}
       </div>
 
       <div className="mb-4">
         <h5 className="font-medium mb-2">Brandet</h5>
-        {brands.map((b) => (
-          <label key={b} className="flex items-center gap-2 text-sm">
+        {brandOptions.map((brand) => (
+          <label key={brand} className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
-              checked={selectedBrands.includes(b)}
-              onChange={() => onToggleBrand(b)}
+              checked={selectedBrands.includes(brand)}
+              onChange={() => onToggleBrand(brand)}
             />
-            {b}
+            {brand}
           </label>
         ))}
       </div>
 
       <div className="mb-4">
         <h5 className="font-medium mb-2">Çmimi</h5>
-        {priceOptions.map((p) => (
-          <label key={p.value} className="flex items-center gap-2 text-sm">
+        {priceOptions.map((product) => (
+          <label key={product.value} className="flex items-center gap-2 text-sm">
             <input
               type="radio"
-              checked={priceRange === p.value}
-              onChange={() => onPriceChange(p.value)}
+              checked={priceRange === product.value}
+              onChange={() => onPriceChange(product.value)}
             />
-            {p.label}
+            {product.label}
           </label>
         ))}
       </div>
