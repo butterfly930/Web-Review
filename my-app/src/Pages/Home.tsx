@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import Header from "../components/ui/layout/Header";
-import Footer from "../components/ui/layout/Footer";
 import FiltersSidebar from "../components/ui/filters/FiltersSidebar";
 import ProductGrid from "../components/ui/products/ProductGrid";
-import AuthModal from "../components/ui/modals/AuthModal";
+import AuthModal from "../components/ui/Auth/AuthModal";
 import mockData from "../../public/mock.json";
+import Layout from "../components/ui/layout/Layout";
 
 interface Product {
   id: number;
@@ -24,131 +23,89 @@ type PriceRange =
   | "50000-100000"
   | "100000+";
 
-// Helper functions for URL state management
 const getFilterStateFromURL = () => {
   const params = new URLSearchParams(window.location.search);
+
   return {
     searchTerm: params.get("search") || "",
-    selectedCategories: params.get("categories")
-      ? params.get("categories")!.split(",").filter(Boolean)
-      : [],
-    selectedBrands: params.get("brands")
-      ? params.get("brands")!.split(",").filter(Boolean)
-      : [],
+    categories: params.get("categories")?.split(",") || [],
+    brands: params.get("brands")?.split(",") || [],
     priceRange: (params.get("price") || "all") as PriceRange,
   };
 };
 
-const updateURLWithFilterState = (
-  searchTerm: string,
-  selectedCategories: string[],
-  selectedBrands: string[],
-  priceRange: PriceRange
+const updateURLWithFilters = (
+  search: string,
+  categories: string[],
+  brands: string[],
+  price: PriceRange
 ) => {
   const params = new URLSearchParams();
-  if (searchTerm) params.set("search", searchTerm);
-  if (selectedCategories.length > 0) params.set("categories", selectedCategories.join(","));
-  if (selectedBrands.length > 0) params.set("brands", selectedBrands.join(","));
-  if (priceRange !== "all") params.set("price", priceRange);
 
-  const newURL = params.toString()
-    ? `${window.location.pathname}?${params.toString()}`
-    : window.location.pathname;
+  if (search) params.set("search", search);
+  if (categories.length) params.set("categories", categories.join(","));
+  if (brands.length) params.set("brands", brands.join(","));
+  if (price !== "all") params.set("price", price);
 
-  window.history.replaceState(null, "", newURL);
+  window.history.replaceState(
+    null,
+    "",
+    params.toString()
+      ? `${window.location.pathname}?${params}`
+      : window.location.pathname
+  );
 };
 
 const Home = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const initialFilterState = getFilterStateFromURL();
-  const [searchTerm, setSearchTerm] = useState(initialFilterState.searchTerm);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(initialFilterState.searchTerm);
+  const initialFilters = getFilterStateFromURL();
+  const [searchTerm, setSearchTerm] = useState(initialFilters.searchTerm);
+  const [categories, setCategories] = useState<string[]>(initialFilters.categories);
+  const [brands, setBrands] = useState<string[]>(initialFilters.brands);
+  const [priceRange, setPriceRange] = useState<PriceRange>(initialFilters.priceRange);
   const [isSearching, setIsSearching] = useState(false);
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialFilterState.selectedCategories
-  );
-  const [selectedBrands, setSelectedBrands] = useState<string[]>(
-    initialFilterState.selectedBrands
-  );
-  const [priceRange, setPriceRange] = useState<PriceRange>(
-    initialFilterState.priceRange
-  );
-
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [selectedCard, setSelectedCard] = useState<number | null>(null);
 
-  // Load products
   useEffect(() => {
-    setProducts(mockData as Product[])
+    setProducts(mockData as Product[]);
   }, []);
 
-  // Debounce search term
   useEffect(() => {
     setIsSearching(true);
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-    debounceTimer.current = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
+    clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      updateURLWithFilters(searchTerm, categories, brands, priceRange);
       setIsSearching(false);
     }, 500);
+  }, [searchTerm, categories, brands, priceRange]);
 
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
-  }, [searchTerm]);
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
-  // Update URL when filters change
-  useEffect(() => {
-    updateURLWithFilterState(debouncedSearchTerm, selectedCategories, selectedBrands, priceRange);
-  }, [debouncedSearchTerm, selectedCategories, selectedBrands, priceRange]);
+    const matchesCategory =
+      !categories.length || categories.includes(product.category);
 
-  // Extract unique categories and brands
-  const categories = useMemo(() => {
-    return [...new Set(products.map((p) => p.category))];
-  }, [products]);
+    const matchesBrand =
+      !brands.length || brands.includes(product.brand);
 
-  const brands = useMemo(() => {
-    return [...new Set(products.map((p) => p.brand))];
-  }, [products]);
+    const matchesPrice =
+      priceRange === "all" ||
+      (priceRange === "0-20000" && product.price <= 20000) ||
+      (priceRange === "20000-50000" && product.price > 20000 && product.price <= 50000) ||
+      (priceRange === "50000-100000" && product.price > 50000 && product.price <= 100000) ||
+      (priceRange === "100000+" && product.price > 100000);
 
-  // Filter products
-  const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
-      const matchSearch = p.name
-        .toLowerCase()
-        .includes(debouncedSearchTerm.toLowerCase());
-
-      const matchCategory =
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(p.category);
-
-      const matchBrand =
-        selectedBrands.length === 0 ||
-        selectedBrands.includes(p.brand);
-
-      const matchPrice =
-        priceRange === "all" ||
-        (priceRange === "0-20000" && p.price <= 20000) ||
-        (priceRange === "20000-50000" &&
-          p.price > 20000 &&
-          p.price <= 50000) ||
-        (priceRange === "50000-100000" &&
-          p.price > 50000 &&
-          p.price <= 100000) ||
-        (priceRange === "100000+" && p.price > 100000);
-
-      return matchSearch && matchCategory && matchBrand && matchPrice;
-    });
-  }, [products, debouncedSearchTerm, selectedCategories, selectedBrands, priceRange]);
+    return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
+  });
 
   return (
     <>
-      <Header
+      <Layout
         onLoginClick={() => {
           setShowLogin(true);
           setShowSignup(false);
@@ -157,10 +114,8 @@ const Home = () => {
           setShowSignup(true);
           setShowLogin(false);
         }}
-      />
+      >
 
-      {/* 🔐 AUTH MODAL (CONNECTED) */}
-      
       <AuthModal
         showLogin={showLogin}
         showSignup={showSignup}
@@ -170,68 +125,51 @@ const Home = () => {
         }}
       />
 
-      <main className="bg-gray-100 min-h-screen flex flex-col items-center">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex flex-col items-center justify-center">
-          <label htmlFor="product-search" className="sr-only">
-            Kërko produktet
-          </label>
-          <div className="relative w-full max-w-xl">
-            <input
-              id="product-search"
-              type="search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Kërko produktet..."
-              className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <main className="bg-gray-100 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-center">
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Kërko produktet..."
+            className="w-full max-w-xl mx-auto rounded-md border px-4 py-2"
+          />
+
           {isSearching && (
-            <div className="mt-3 flex justify-center">
-              <AiOutlineLoading3Quarters className="w-10 h-10 text-red-500 animate-spin" />
-            </div>
+            <AiOutlineLoading3Quarters className="mx-auto mt-4 h-8 w-8 animate-spin text-red-500" />
           )}
         </div>
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col lg:flex-row gap-4 lg:gap-6">
+
+        <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row gap-6">
           <FiltersSidebar
             categories={categories}
-            selectedCategories={selectedCategories}
-            onToggleCategory={(category) =>
-              setSelectedCategories((prev) =>
-                prev.includes(category)
-                  ? prev.filter((c) => c !== category)
-                  : [...prev, category]
-              )
-            }
             brands={brands}
-            selectedBrands={selectedBrands}
-            onToggleBrand={(brand) =>
-              setSelectedBrands((prev) =>
-                prev.includes(brand)
-                  ? prev.filter((b) => b !== brand)
-                  : [...prev, brand]
+            selectedCategories={categories}
+            selectedBrands={brands}
+            priceRange={priceRange}
+            onToggleCategory={(c) =>
+              setCategories((prev) =>
+                prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
               )
             }
-            priceRange={priceRange}
-            onPriceChange={(value) =>
-              setPriceRange(value as PriceRange)
+            onToggleBrand={(b) =>
+              setBrands((prev) =>
+                prev.includes(b) ? prev.filter((x) => x !== b) : [...prev, b]
+              )
             }
+            onPriceChange={(p) => setPriceRange(p as PriceRange)}
             onClear={() => {
               setSearchTerm("");
-              setSelectedCategories([]);
-              setSelectedBrands([]);
+              setCategories([]);
+              setBrands([]);
               setPriceRange("all");
             }}
           />
 
-          <ProductGrid
-            products={filteredProducts}
-            selectedCard={selectedCard}
-            onSelect={setSelectedCard}
-          />
+          <ProductGrid products={filteredProducts} />
         </div>
       </main>
-
-      <Footer />
+      </Layout>
     </>
   );
 };

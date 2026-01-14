@@ -1,5 +1,5 @@
-import Login from "../../common/Login";
-import Signup from "../../common/Signup";
+import Login from "./Login";
+import Signup from "./Signup";
 
 interface AuthModalProps {
   showLogin: boolean;

@@ -1,10 +1,10 @@
-import React from "react";
+import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 interface LoginProps {
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const loginSchema = z.object({
@@ -14,7 +14,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const Login: React.FC<LoginProps> = ({ onClose = () => {} }) => {
+const Login: FC<LoginProps> = ({ onClose }) => {
   const {
     register,
     handleSubmit,
@@ -22,11 +22,6 @@ const Login: React.FC<LoginProps> = ({ onClose = () => {} }) => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
-
-  const onSubmit = (data: LoginFormData) => {
-    console.log("Login attempt", data);
-    onClose();
-  };
 
   return (
     <div className="p-6 bg-white rounded-xl w-full max-w-md text-left shadow-lg border border-gray-100">
@@ -44,7 +39,7 @@ const Login: React.FC<LoginProps> = ({ onClose = () => {} }) => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(() => onClose())} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-800">Email</label>
           <input

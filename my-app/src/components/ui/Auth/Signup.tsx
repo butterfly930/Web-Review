@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 interface SignupProps {
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const signupSchema = z
@@ -27,7 +27,7 @@ const signupSchema = z
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-const Signup: React.FC<SignupProps> = ({ onClose = () => {} }) => {
+const Signup: FC<SignupProps> = ({ onClose }) => {
   const [password, setPassword] = useState("");
   
   const {
@@ -43,10 +43,6 @@ const Signup: React.FC<SignupProps> = ({ onClose = () => {} }) => {
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   const hasMinLength = password.length >= 8;
 
-  const onSubmit = (data: SignupFormData) => {
-    console.log("Signup attempt", data);
-    onClose();
-  };
 
   return (
     <div className="p-4 sm:p-6 bg-white rounded-xl w-full max-w-md text-left shadow-lg border border-gray-100 mx-auto">
@@ -64,7 +60,7 @@ const Signup: React.FC<SignupProps> = ({ onClose = () => {} }) => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:gap-5">
+      <form onSubmit={handleSubmit(() => onClose())} className="flex flex-col gap-4 sm:gap-5">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-800">Name</label>
           <input
