@@ -5,7 +5,7 @@ interface HamburgerMenuProps {
   toggleMenu: () => void;
 }
 
-const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ isOpen, toggleMenu }) => {
+const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ toggleMenu }) => {
   const barClassName = "w-[25px] h-[3px] bg-black block transition-all duration-300";
   
   return (

@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,7 +26,9 @@ const Login = ({ onClose }: LoginProps) => {
     <div className="p-6 bg-white rounded-xl w-full max-w-md text-left shadow-lg border border-gray-100">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Welcome back</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+            Welcome back
+          </p>
           <h2 className="text-2xl font-semibold text-gray-900">Login</h2>
         </div>
         <button
@@ -39,7 +40,7 @@ const Login = ({ onClose }: LoginProps) => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit(() => onClose())} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(onClose)} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-800">Email</label>
           <input
