@@ -1,5 +1,6 @@
 import ProductCard from "./ProductCard";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useClickOutside } from "../../../hooks/useClickOutside";
 
 interface Product {
   id: number;
@@ -15,25 +16,12 @@ interface ProductGridProps {
   products: Product[];
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({
-  products}) => {
+const ProductGrid= ({
+  products}: ProductGridProps) => {
     const [selectedCard, setSelectedCard] = useState<number | null>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        gridRef.current &&
-        !gridRef.current.contains(event.target as Node)
-      ) {
-        setSelectedCard(null);
-      }
-    };
- document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  useClickOutside(gridRef as React.RefObject<HTMLElement>, () => setSelectedCard(null));
 
   if (!products.length) {
     return <p>Nuk u gjet asnjë produkt.</p>;

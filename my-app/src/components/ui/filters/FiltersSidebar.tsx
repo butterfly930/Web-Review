@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ArrowIcon from "../../common/ArrowIcon";
+
 interface FiltersSidebarProps {
   selectedCategories: string[];
   selectedBrands: string[];
@@ -21,7 +22,7 @@ const priceOptions = [
   { value: "100000+", label: "100,000+ Lekë" },
 ];
 
-const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
+const FiltersSidebar = ({
   selectedCategories,
   selectedBrands,
   priceRange,
@@ -29,7 +30,7 @@ const FiltersSidebar: React.FC<FiltersSidebarProps> = ({
   onToggleBrand,
   onPriceChange,
   onClear,
-}) => {
+}: FiltersSidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

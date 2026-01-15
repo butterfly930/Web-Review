@@ -27,7 +27,7 @@ const signupSchema = z
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-const Signup: FC<SignupProps> = ({ onClose }) => {
+const Signup= ({ onClose }: SignupProps) => {
   const [password, setPassword] = useState("");
   
   const {

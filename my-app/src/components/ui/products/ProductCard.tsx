@@ -14,11 +14,11 @@ interface ProductCardProps {
   onClick: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCard = ({
   product,
   isSelected,
   onClick,
-}) => {
+}: ProductCardProps) => {
   return (
     <div
       onClick={onClick}

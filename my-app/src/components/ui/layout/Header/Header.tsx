@@ -1,18 +1,34 @@
 import { useState } from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import "../../../index.css";
-import HamburgerMenu from "./HamburgerMenu";
+import "../../../../../src/index.css";
+import HamburgerMenu from "../Header/HamburgerMenu";
 
 interface HeaderProps {
   onLoginClick?: () => void;
   onSignupClick?: () => void;
 }
 
+const NAV_LINKS = [
+  { href: "#Faqja Kryesore", label: "Faqja Kryesore" },
+  { href: "#Produktet", label: "Produktet" },
+  { href: "#Rreth Nesh", label: "Rreth Nesh" },
+  { href: "#Mënyrë Kontakti", label: "Mënyrë Kontakti" },
+];
+
+const AUTH_BUTTONS = [
+  { label: "Login", key: "login" },
+  { label: "Sign Up", key: "signup" },
+];
+
 const Header: React.FC<HeaderProps> = ({
   onLoginClick = () => {},
   onSignupClick = () => {},
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  
+  const authHandlers = { login: onLoginClick, signup: onSignupClick };
+  const buttonClassName = "text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2";
+  const linkClassName = "red-underline text-sm sm:text-base";
 
   return (
     <header className="bg-blue w-full box-border relative shadow-sm">
@@ -30,10 +46,11 @@ const Header: React.FC<HeaderProps> = ({
               isMenuOpen ? "flex fixed top-[80px] left-0 right-0 bg-white p-4 z-[1000]" : "hidden lg:flex"
             }`}
           >
-            <a href="#Faqja Kryesore" className="red-underline text-sm sm:text-base">Faqja Kryesore</a>
-            <a href="#Produktet" className="red-underline text-sm sm:text-base">Produktet</a>
-            <a href="#Rreth Nesh" className="red-underline text-sm sm:text-base">Rreth Nesh</a>
-            <a href="#Mënyrë Kontakti" className="red-underline text-sm sm:text-base">Mënyrë Kontakti</a>
+            {NAV_LINKS.map(({ href, label }) => (
+              <a key={href} href={href} className={linkClassName}>
+                {label}
+              </a>
+            ))}
           </nav>
 
           {/* Cart & Auth Buttons */}
@@ -48,8 +65,16 @@ const Header: React.FC<HeaderProps> = ({
                 0
               </span>
             </button>
-            <button onClick={onLoginClick} type="button" className="text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Login</button>
-            <button onClick={onSignupClick} type="button" className="text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Sign Up</button>
+            {AUTH_BUTTONS.map(({ label, key }) => (
+              <button 
+                key={key}
+                onClick={authHandlers[key as keyof typeof authHandlers]} 
+                type="button" 
+                className={buttonClassName}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -152,8 +152,8 @@ const Home = () => {
 
         <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row gap-6">
           <FiltersSidebar
-            categoryOptions={categories}
-            brandOptions={brands}
+            categories={availableCategories}
+            brands={availableBrands}
             selectedCategories={categories}
             selectedBrands={brands}
             priceRange={priceRange}

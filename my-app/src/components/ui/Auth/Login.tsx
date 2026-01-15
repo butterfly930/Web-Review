@@ -14,7 +14,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const Login: FC<LoginProps> = ({ onClose }) => {
+const Login = ({ onClose }: LoginProps) => {
   const {
     register,
     handleSubmit,

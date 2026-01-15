@@ -7,11 +7,11 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({
+const AuthModal= ({
   showLogin,
   showSignup,
   onClose,
-}) => {
+}: AuthModalProps) => {
   if (!showLogin && !showSignup) return null;
 
   return (
