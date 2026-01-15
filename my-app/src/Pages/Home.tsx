@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import FiltersSidebar from "../components/ui/filters/FiltersSidebar";
 import ProductGrid from "../components/ui/products/ProductGrid";
-import mockData from "../../productData/mock.json";
-import Layout from "../components/ui/layout/Layout";
+import mockData from "../../public/productData/mock.json";
+import Layout from "../components/layout/Layout";
+import { filterProducts } from "../components/utils/filteredProducts";
 
 interface Product {
   id: number;
@@ -33,30 +34,11 @@ const Home = () => {
     setProducts(mockData as Product[]);
   }, []);
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-    const matchesCategory =
-      !selectedCategories.length ||
-      selectedCategories.includes(product.category);
-
-    const matchesBrand =
-      !selectedBrands.length || selectedBrands.includes(product.brand);
-
-    const matchesPrice =
-      priceRange === "all" ||
-      (priceRange === "0-20000" && product.price <= 20000) ||
-      (priceRange === "20000-50000" &&
-        product.price > 20000 &&
-        product.price <= 50000) ||
-      (priceRange === "50000-100000" &&
-        product.price > 50000 &&
-        product.price <= 100000) ||
-      (priceRange === "100000+" && product.price > 100000);
-
-    return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
+  const filteredProducts = filterProducts(products, {
+    searchTerm,
+    selectedCategories,
+    selectedBrands,
+    priceRange,
   });
 
   return (

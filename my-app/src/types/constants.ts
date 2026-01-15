@@ -17,3 +17,4 @@ export const priceOptions = [
   { value: "50000-100000", label: "50,000 – 100,000 Lekë" },
   { value: "100000+", label: "100,000+ Lekë" },
 ];
+

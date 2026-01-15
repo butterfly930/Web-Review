@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "public/ArrowIcon.tsx"],
+  "include": ["src", "public/assets/icons/ArrowIcon.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

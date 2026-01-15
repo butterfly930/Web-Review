@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import "../../../../../src/index.css";
+import "../../../../src/index.css";
 import HamburgerMenu from "./HamburgerMenu";
 
 interface HeaderProps {

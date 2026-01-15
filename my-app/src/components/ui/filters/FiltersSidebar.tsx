@@ -1,10 +1,10 @@
 import { useState } from "react";
-import ArrowIcon from "../../../../public/ArrowIcon";
+import ArrowIcon from "../../../../public/assets/icons/ArrowIcon";
 import {
   brandOptions,
   categoryOptions,
   priceOptions,
-} from "../../../constants";
+} from "../../../types/constants";
 import { useSearchParams } from "react-router-dom";
 
 interface FiltersSidebarProps {
